@@ -1,0 +1,79 @@
+---
+title: "Stock Exchange Analysics"
+output:
+  
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+### Importing Libraries.
+```{r}
+library("quantmod")
+library("ggplot2")
+library("dplyr")
+library(plotly)
+```
+
+### Loading Dataset
+```{r}
+Data <- read.csv("indexProcessed.csv")
+summary(Data)
+Data$Date <- unlist(Data$Date)
+Data$CloseUSD <- unlist(Data$CloseUSD)
+```
+
+### Mutating Dataset
+```{r}
+# Adding column based on other column:
+Data<-Data %>%
+  mutate(Status = if_else(Open<=Close,"True","False")
+    )
+Data<-Data %>%
+  mutate(Inc_or_Dec = (Close-Open)
+    )
+summary(Data)
+table(Data$Status)
+```
+### Analyzing Graphs for overall data, the questions and answers are in Report
+```{r}
+ggplot(Data) + geom_line(mapping = aes(x=Date, y=Volume, group=1), color='blue')
+ggplot(Data) + geom_histogram(mapping = aes(x=Volume,color=Status), fill='white')
+ggplot(data = Data) + geom_point(mapping = aes(x = Date, y =CloseUSD,color=Index))
+ggplot(data = Data) + geom_point(mapping = aes(x = Date, y =Open))
+
+```
+\newline
+\newline
+## Getting Data for New York Stock Exchange from 2021 and analyzing it. 
+```{r}
+Data <- Data %>% filter(Index == 'NYA')
+Data$Date <- as.Date(Data$Date)
+Data <- Data %>% filter(Date > '2021-01-01')
+
+fig <- Data %>% plot_ly(x = ~Date, type="candlestick",
+          open = Data$Open, close = Data$Close,
+          high = Data$High, low = Data$Low) 
+fig <- fig %>% layout(title = "Basic Candlestick Chart",
+         xaxis = list(rangeslider = list(visible = F)))
+
+fig
+
+
+Data <- Data[,c(2,3,4,5,6,8,7)]
+summary(Data)
+Data<-xts(Data[, -1], order.by=as.Date(Data$Date))
+barChart(Data)
+
+```
+
+
+
+
+
+
+

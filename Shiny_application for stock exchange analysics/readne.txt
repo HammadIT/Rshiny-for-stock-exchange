@@ -1,0 +1,5 @@
+Application folder contains your shinny application, along with it i also created a screenshot how your application looks like.
+Assignment.Rmd is the coding in R.
+assignment.docx is the output from Assignment.Rmd file.
+indexProcessed.csv is the dataset.
+Stock_exchange_analysics.pdf is the latex report.
